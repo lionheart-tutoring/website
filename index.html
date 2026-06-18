@@ -108,7 +108,7 @@
         <h2 class="section-title">Location</h2>
         <div class="location-grid">
             <div class="location-text">
-                <p>I'm based in <strong>Soham, Cambridgeshire</strong>, and I work with students from Bottisham Village College, Soham Village College, Ely College, Witchford Village College, and surrounding schools.</p>
+                <p>I'm based in <strong>Soham, Cambridgeshire</strong>, and I work with students from Bottisham Village College, Ely College, Soham Village College, Witchford Village College, and surrounding schools.</p>
                 <p>Most sessions are <strong>in person</strong> at my home in Soham. I teach students from across the area, including:</p>
                 <p class="town-list">Aldreth &middot; Barway &middot; Beck Row &middot; Bottisham &middot; Burwell &middot; Cheveley &middot; Chippenham &middot; Coveney &middot; Dullingham &middot; Ely &middot; Exning &middot; Fordham &middot; Freckenham &middot; Haddenham &middot; Isleham &middot; Kennett &middot; Little Thetford &middot; Littleport &middot; Lode &middot; Mepal &middot; Mildenhall &middot; Newmarket &middot; Prickwillow &middot; Queen Adelaide &middot; Reach &middot; Snailwell &middot; Soham &middot; Stetchworth &middot; Stretham &middot; Sutton &middot; Swaffham Bulbeck &middot; Swaffham Prior &middot; Upware &middot; Wentworth &middot; West Row &middot; Wicken &middot; Wilburton &middot; Witchford &middot; Woodditton &middot; Worlington</p>
                 <p>Online sessions are available on a case-by-case basis for existing students. See my <a href="faq.html" class="text-link">FAQ</a> for details.</p>
@@ -123,7 +123,7 @@
 <section class="section contact" id="contact">
     <div class="container">
         <h2 class="section-title">Get in Touch</h2>
-        <p class="contact-intro">I'd love to hear from you. Whether you're looking for regular term-time sessions or help with exam preparation, drop me a line and we can chat about what would work best for your child.</p>
+        <p class="contact-intro">I'd love to hear from you. Whether you're looking for regular term-time sessions or help with exam preparation, drop me a line and we can chat about what would work best for your child. I'm also happy to offer a free, no-obligation 20-minute consultation in person if you'd find it useful &mdash; no pressure either way.</p>
         <div class="contact-grid">
             <a href="mailto:glionteach@gmail.com?subject=Interested%20in%20tutoring" class="contact-card">
                 <div class="contact-icon">&#x2709;</div>
@@ -136,6 +136,23 @@
                 <p>07565 969197</p>
             </a>
         </div>
+        <form class="contact-form" id="enquiryForm">
+            <input type="hidden" name="_subject" value="New tutoring enquiry from the Lionheart website">
+            <input type="hidden" name="_template" value="table">
+            <input type="hidden" name="_captcha" value="false">
+            <input type="text" name="_honey" tabindex="-1" autocomplete="off" style="display:none">
+            <div class="form-row">
+                <input type="text" name="Name" placeholder="Your name" required>
+                <input type="email" name="Email" placeholder="Your email" required>
+            </div>
+            <div class="form-row">
+                <input type="tel" name="Phone" placeholder="Phone (optional)">
+                <input type="text" name="Student year and subject" placeholder="Student's year &amp; subject (optional)">
+            </div>
+            <textarea name="Message" rows="4" placeholder="How can I help? Tell me a little about what your child needs." required></textarea>
+            <button type="submit" class="btn btn-form">Send enquiry</button>
+            <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+        </form>
     </div>
 </section>
 
@@ -177,6 +194,35 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
 });
+
+const enquiryForm = document.getElementById('enquiryForm');
+if (enquiryForm) {
+    enquiryForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const status = document.getElementById('formStatus');
+        const btn = enquiryForm.querySelector('button[type="submit"]');
+        if (enquiryForm._honey && enquiryForm._honey.value) return;
+        btn.disabled = true;
+        status.className = 'form-status';
+        status.textContent = 'Sending\u2026';
+        try {
+            const res = await fetch('https://formsubmit.co/ajax/glionteach@gmail.com', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify(Object.fromEntries(new FormData(enquiryForm)))
+            });
+            if (!res.ok) throw new Error('Request failed');
+            enquiryForm.reset();
+            status.className = 'form-status success';
+            status.textContent = "Thank you \u2014 your message has been sent. I'll be in touch soon.";
+        } catch (err) {
+            status.className = 'form-status error';
+            status.textContent = 'Sorry, something went wrong. Please email glionteach@gmail.com directly.';
+        } finally {
+            btn.disabled = false;
+        }
+    });
+}
 </script>
 
 </body>
